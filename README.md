@@ -5,6 +5,7 @@
 ```
 git clone https://github.com/avran02/kode
 cd kode
+cp example.env .env
 docker-compose up --build -d
 ```
 
