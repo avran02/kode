@@ -1,0 +1,6 @@
+*.git
+dockerfile
+docker-compose.yml
+migrations/*
+*.env
+*.md

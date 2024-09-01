@@ -1,0 +1,170 @@
+openapi: 3.0.0
+info:
+  title: Notes Service API
+  description: REST API для управления заметками
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000
+    description: Local server
+
+paths:
+  /register:
+    post:
+      summary: Зарегистрировать нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user1"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - username
+                - password
+      responses:
+        '201':
+          description: Пользователь успешно зарегистрирован
+        '400':
+          description: Ошибка валидации данных
+        '409':
+          description: Пользователь уже существует
+
+  /login:
+    post:
+      summary: Аутентификация пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  example: "user1"
+                password:
+                  type: string
+                  example: "password123"
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Успешная аутентификация
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+        '401':
+          description: Неверные учетные данные
+        '400':
+          description: Ошибка валидации данных
+  /notes:
+    post:
+      summary: Добавить новую заметку
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  example: "Моя заметка"
+                content:
+                  type: string
+                  example: "Это содержимое заметки."
+              required:
+                - title
+                - content
+      responses:
+        '201':
+          description: Заметка успешно создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    example: "1a2b3c"
+                  title:
+                    type: string
+                    example: "Моя заметка"
+                  content:
+                    type: string
+                    example: "Это содержимое заметки."
+        '400':
+          description: Ошибка валидации данных
+        '401':
+          description: Не авторизован
+        '500':
+          description: Внутренняя ошибка сервера
+
+    get:
+      summary: Получить список заметок пользователя
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Список заметок успешно получен
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: "1a2b3c"
+                    title:
+                      type: string
+                      example: "Моя заметка"
+                    content:
+                      type: string
+                      example: "Это содержимое заметки."
+        '401':
+          description: Не авторизован
+        '500':
+          description: Внутренняя ошибка сервера
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        content:
+          type: string
+      required:
+        - title
+        - content
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+
