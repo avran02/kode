@@ -84,10 +84,10 @@ paths:
               properties:
                 title:
                   type: string
-                  example: "Моя заметка"
+                  example: "Заметка"
                 content:
                   type: string
-                  example: "Это содержимое заметки."
+                  example: "Содержимое заметки."
               required:
                 - title
                 - content
@@ -101,13 +101,13 @@ paths:
                 properties:
                   id:
                     type: string
-                    example: "1a2b3c"
+                    example: "1"
                   title:
                     type: string
-                    example: "Моя заметка"
+                    example: "Заметка"
                   content:
                     type: string
-                    example: "Это содержимое заметки."
+                    example: "Содержимое заметки."
         '400':
           description: Ошибка валидации данных
         '401':
@@ -131,13 +131,13 @@ paths:
                   properties:
                     id:
                       type: string
-                      example: "1a2b3c"
+                      example: "1"
                     title:
                       type: string
-                      example: "Моя заметка"
+                      example: "Заметка"
                     content:
                       type: string
-                      example: "Это содержимое заметки."
+                      example: "Содержимое заметки."
         '401':
           description: Не авторизован
         '500':
