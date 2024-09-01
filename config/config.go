@@ -10,6 +10,7 @@ import (
 type Config struct {
 	Server
 	DB
+	YandexSpeller
 	JWTSecret string
 }
 
@@ -25,6 +26,12 @@ type DB struct {
 	User     string
 	Password string
 	Database string
+}
+
+type YandexSpeller struct {
+	URL      string
+	Language string
+	Options  string
 }
 
 func New() *Config {
@@ -47,6 +54,11 @@ func New() *Config {
 			User:     os.Getenv("DB_USER"),
 			Password: os.Getenv("DB_PASSWORD"),
 			Database: os.Getenv("DB_DATABASE"),
+		},
+		YandexSpeller: YandexSpeller{
+			URL:      os.Getenv("YANDEX_SPELLER_URL"),
+			Language: os.Getenv("YANDEX_SPELLER_LANGUAGE"),
+			Options:  os.Getenv("YANDEX_SPELLER_OPTIONS"),
 		},
 	}
 }

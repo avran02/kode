@@ -44,8 +44,9 @@ func New() *App {
 	dbConnection := repository.MustGetPostgresConnection(config.DB)
 	authService := service.NewAuthService(repository.NewUserRepository(dbConnection), config.JWTSecret)
 	notesService := service.NewNotesService(repository.NewNotesRepository(dbConnection))
+	yandexSpellerService := service.NewYandexSpellerService(config.YandexSpeller)
 
-	controller := controller.New(authService, notesService)
+	controller := controller.New(authService, notesService, yandexSpellerService)
 	router := router.New(controller)
 
 	return &App{

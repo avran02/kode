@@ -12,9 +12,9 @@ type controller struct {
 	NoteController
 }
 
-func New(as service.AuthService, ns service.NotesService) Controller {
+func New(as service.AuthService, ns service.NotesService, yss service.YandexSpellerService) Controller {
 	return &controller{
 		AuthController: newAuthController(as),
-		NoteController: newNoteController(ns),
+		NoteController: newNoteController(ns, yss),
 	}
 }

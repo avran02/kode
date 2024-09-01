@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"log/slog"
 	"net/http"
 
 	contextkeys "github.com/avran02/kode/internal/context_keys"
@@ -17,7 +16,8 @@ type NoteController interface {
 }
 
 type noteController struct {
-	noteService service.NotesService
+	noteService          service.NotesService
+	yandexSpellerService service.YandexSpellerService
 }
 
 func (c *noteController) CreateNote(w http.ResponseWriter, r *http.Request) {
@@ -33,7 +33,10 @@ func (c *noteController) CreateNote(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	slog.Info("create note", "title", req.Title, "content", req.Content, "user_id", userID)
+	if err := c.validateNote(w, req); err != nil {
+		// Ошибка будет отправлена на клиент в методе validateNote
+		return
+	}
 
 	noteModel, err := c.noteService.CreateNote(userID, req.Title, req.Content)
 	if err != nil {
@@ -67,8 +70,40 @@ func (c *noteController) GetNotes(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func newNoteController(s service.NotesService) NoteController {
+func (c *noteController) validateNote(w http.ResponseWriter, req dto.CreateNoteRequest) error {
+	if req.Title == "" || req.Content == "" {
+		http.Error(w, "empty title or content", http.StatusBadRequest)
+		return ErrEmptyContentOrTitle
+	}
+
+	if len(req.Title) > 255 {
+		http.Error(w, "title is too long", http.StatusBadRequest)
+		return ErrTitleTooLong
+	}
+
+	spellErrors, err := c.yandexSpellerService.CheckText(req.Title + " " + req.Content)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return err
+	}
+
+	if len(spellErrors) > 0 {
+		spellErrorsJSON, err := json.Marshal(spellErrors)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return err
+		}
+
+		http.Error(w, string(spellErrorsJSON), http.StatusBadRequest)
+		return ErrInvalidContent
+	}
+
+	return nil
+}
+
+func newNoteController(s service.NotesService, yss service.YandexSpellerService) NoteController {
 	return &noteController{
-		noteService: s,
+		noteService:          s,
+		yandexSpellerService: yss,
 	}
 }

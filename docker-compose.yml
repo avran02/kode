@@ -46,6 +46,9 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_DATABASE=${DB_DATABASE}
+      - YANDEX_SPELLER_URL=${YANDEX_SPELLER_URL}
+      - YANDEX_SPELLER_LANGUAGE=${YANDEX_SPELLER_LANGUAGE}
+      - YANDEX_SPELLER_OPTIONS=${YANDEX_SPELLER_OPTIONS}
     volumes:
       - ./docs/openapi.yml:/app/docs/openapi.yml
     ports:
